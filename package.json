@@ -1,0 +1,26 @@
+{
+  "name": "@kutluhaneth46/arc-dev-survival-kit",
+  "version": "0.1.0",
+  "description": "Arc Testnet developer utilities — RPC fallbacks, USDC decimals, gas-cap diagnostics",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kutluhaneth46/arc-dev-survival-kit.git"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "example": "npx tsx examples/viem-client.ts"
+  },
+  "peerDependencies": {
+    "viem": "^2.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "viem": "^2.31.0"
+  }
+}
