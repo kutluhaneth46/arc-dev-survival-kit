@@ -8,11 +8,22 @@ type ReceiptClient = {
 };
 
 function isRateLimitError(error: unknown): boolean {
-  if (!error || typeof error !== "object") return false;
-  const e = error as { code?: number; shortMessage?: string; message?: string };
-  if (e.code === RPC_RATE_LIMIT_CODE) return true;
-  const text = `${e.shortMessage ?? ""} ${e.message ?? ""}`.toLowerCase();
-  return text.includes("rate limit") || text.includes("request limit reached");
+  let current: unknown = error;
+  while (current && typeof current === "object") {
+    const e = current as {
+      code?: number;
+      shortMessage?: string;
+      message?: string;
+      cause?: unknown;
+    };
+    if (e.code === RPC_RATE_LIMIT_CODE) return true;
+    const text = `${e.shortMessage ?? ""} ${e.message ?? ""}`.toLowerCase();
+    if (text.includes("rate limit") || text.includes("request limit reached")) {
+      return true;
+    }
+    current = e.cause;
+  }
+  return false;
 }
 
 /**

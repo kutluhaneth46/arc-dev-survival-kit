@@ -12,7 +12,10 @@ export const NATIVE_TO_ERC20_SCALE = 10n ** 12n;
 export const NODE_DEFAULT_RPC_GAS_CAP = 30_000_000;
 
 /** Observed public RPC eth_estimateGas clamp (also EIP-7825 per-tx cap). */
-export const PUBLIC_RPC_GAS_CAP = 16_777_216;
+export const EIP7825_TX_GAS_LIMIT = 16_777_216;
+
+/** Alias for EIP-7825 per-transaction gas limit. */
+export const PUBLIC_RPC_GAS_CAP = EIP7825_TX_GAS_LIMIT;
 
 /** Arc Testnet block gas limit (observed via eth_getBlockByNumber). */
 export const BLOCK_GAS_LIMIT = 30_000_000;
@@ -35,4 +38,6 @@ export const ARC_TESTNET_RPC_URLS = [
   "https://rpc.blockdaemon.testnet.arc.network",
   "https://rpc.blockdaemon.testnet.arc.io",
   "https://rpc.quicknode.testnet.arc.network",
+  "https://rpc.quicknode.testnet.arc.io",
+  "https://arc-testnet.drpc.org",
 ] as const;

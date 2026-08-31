@@ -31,7 +31,7 @@ await waitForReceiptWithRetry(client, hash);
 | `constants.ts` | Chain id, USDC address, RPC URL list, gas cap numbers |
 | `rpc.ts` | `arcTestnet` chain + `fallback()` transport across public endpoints |
 | `usdc.ts` | Native 18-decimal gas token vs ERC-20 6-decimal USDC (`10^12` scale) |
-| `gas.ts` | Parse `gas required exceeds allowance (<limit>)` — cap vs balance |
+| `gas.ts` | Parse gas-cap errors (`-32003` / `-32000`) — EIP-7825 vs balance allowance |
 | `receipt.ts` | Retry `waitForTransactionReceipt` on `-32011` rate limits |
 
 ## Arc Testnet cheat sheet
@@ -41,10 +41,10 @@ await waitForReceiptWithRetry(client, hash);
 | Chain ID | `5042002` |
 | USDC (ERC-20, 6 dec) | `0x3600000000000000000000000000000000000000` |
 | Native gas token | USDC at **18 decimals** (`eth_getBalance`, receipts) |
-| Block gas limit | 30,000,000 |
-| Public RPC `eth_estimateGas` cap | 16,777,216 (2²⁴) on `rpc.testnet.arc.network` |
-| Node `--rpc.gascap` default | 30,000,000 |
-| Rate limit JSON-RPC code | `-32011` (`request limit reached`) |
+| Block gas limit | 30,000,000 (shared across txs per block) |
+| EIP-7825 per-tx gas cap | 16,777,216 (2²⁴) — all endpoints post-Osaka |
+| Node `--rpc.gascap` default | 30,000,000 (effective cap is `min(gascap, 2²⁴)`) |
+| Concurrency limit JSON-RPC code | `-32011` (`request limit reached`; `x-ratelimit-limit: 1;w=1`) |
 | CCTP domain (testnet) | `26` |
 
 ### USDC decimals (silent bug)
@@ -64,19 +64,28 @@ const sendable = maxErc20Sendable(nativeBalance, estimatedGasCostNative);
 
 **Max-send trap:** transferring full `balanceOf` leaves only `native mod 10^12` for gas — always too little. Reserve gas in native units first.
 
-### Gas estimation failures ≠ impossible on-chain
+### Gas estimation failures at the EIP-7825 cap
 
-Public RPC may reject estimates above 16M gas while blocks accept up to 30M. If you see:
+Post-Osaka, **no single transaction can exceed 16,777,216 gas** — this is protocol-level
+(EIP-7825), not a public-endpoint policy. The 30M block limit is for multiple
+transactions per block.
+
+Common error shapes:
 
 ```json
+{"code":-32003,"message":"out of gas: gas required exceeds: 16777216"}
 {"code":-32000,"message":"gas required exceeds allowance (16777216)"}
 ```
 
-…retry with another endpoint, your own node, or submit with an explicit `gas` limit after validating elsewhere.
+If the parsed limit is 2²⁴, lowering gas in the contract or splitting work across
+transactions is required — switching RPC providers will not help.
 
-### Rate limits
+### Concurrency limits (not requests/sec)
 
-`viem` `fallback()` helps read calls. **`waitForTransactionReceipt` still dies on the first `-32011`** unless you wrap it — use `waitForReceiptWithRetry` from this kit.
+Public endpoints allow **one in-flight request per connection** (`x-ratelimit-limit: 1;w=1`).
+Serialize calls per URL; avoid `Promise.all` fan-out on a single endpoint.
+
+`viem` `fallback()` advances past `-32011` on most read/estimate paths. **`waitForTransactionReceipt` still aborts on the first `-32011`** unless wrapped — use `waitForReceiptWithRetry` from this kit.
 
 ## Related upstream work
 
