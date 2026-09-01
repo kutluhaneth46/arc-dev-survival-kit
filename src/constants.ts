@@ -11,7 +11,7 @@ export const NATIVE_TO_ERC20_SCALE = 10n ** 12n;
 /** Self-hosted arc-node-execution default --rpc.gascap. */
 export const NODE_DEFAULT_RPC_GAS_CAP = 30_000_000;
 
-/** Observed public RPC eth_estimateGas clamp (also EIP-7825 per-tx cap). */
+/** EIP-7825 (Osaka) per-transaction gas limit — protocol cap on all endpoints. */
 export const EIP7825_TX_GAS_LIMIT = 16_777_216;
 
 /** Alias for EIP-7825 per-transaction gas limit. */
