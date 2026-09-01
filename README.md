@@ -98,7 +98,7 @@ Serialize calls per URL; avoid `Promise.all` fan-out on a single endpoint.
 
 Official docs: [docs.arc.io](https://docs.arc.io/)
 
-Community reference (same EIP-7825 corrections): linked from [arc-node #299](https://github.com/circlefin/arc-node/pull/299#issuecomment-5486019162).
+Community reference (same EIP-7825 corrections): [arc-node #305](https://github.com/circlefin/arc-node/issues/305) · linked from [PR #299](https://github.com/circlefin/arc-node/pull/299#issuecomment-5486019162).
 
 ## License
 
