@@ -2,6 +2,7 @@ import type { Chain, HttpTransport, Transport } from "viem";
 import { fallback, http } from "viem";
 import {
   ARC_TESTNET_CHAIN_ID,
+  ARC_TESTNET_RPC_PROVIDER_URLS,
   ARC_TESTNET_RPC_URLS,
   ARC_TESTNET_USDC_ADDRESS,
 } from "./constants.js";
@@ -19,11 +20,11 @@ export const arcTestnet = {
   },
 } as const satisfies Chain;
 
-/** Fallback transport across public Arc Testnet RPC providers. */
+/** Fallback across distinct provider budgets (not .network/.io pairs). */
 export function arcTestnetTransport(
-  urls: readonly string[] = ARC_TESTNET_RPC_URLS,
+  urls: readonly string[] = ARC_TESTNET_RPC_PROVIDER_URLS,
 ): Transport {
-  return fallback(urls.map((url) => http(url)));
+  return fallback(urls.map((url) => http(url)), { rank: true });
 }
 
 export type ArcClientOptions = {

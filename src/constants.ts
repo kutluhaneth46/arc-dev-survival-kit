@@ -27,7 +27,21 @@ export const CCTP_DOMAIN_ARC_TESTNET = 26;
 export const RPC_RATE_LIMIT_CODE = -32011;
 
 /**
- * Public Arc Testnet HTTPS endpoints. Spread load across providers.
+ * One URL per distinct provider budget for fallback().
+ * Do not rotate .network → .io on the same provider — those pairs often share
+ * one rate-limit bucket (QuickNode confirmed on arc-node#305).
+ */
+export const ARC_TESTNET_RPC_PROVIDER_URLS = [
+  "https://rpc.testnet.arc.network",
+  "https://rpc.drpc.testnet.arc.network",
+  "https://rpc.blockdaemon.testnet.arc.network",
+  "https://rpc.quicknode.testnet.arc.network",
+  "https://arc-testnet.drpc.org",
+] as const;
+
+/**
+ * All public hostnames (9). For reference / manual spreading only — prefer
+ * ARC_TESTNET_RPC_PROVIDER_URLS in fallback transport.
  * @see https://github.com/circlefin/arc-node/pull/299
  */
 export const ARC_TESTNET_RPC_URLS = [
