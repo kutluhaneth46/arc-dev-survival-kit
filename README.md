@@ -4,6 +4,8 @@ Practical helpers and reference notes for building on **Arc Testnet** without st
 
 This repo complements upstream docs and open PRs — it is meant to be **copied, imported, or forked** into your app.
 
+**Live RPC health:** [Arc RPC Pulse](https://kutluhaneth46.github.io/arc-rpc-pulse/) — real-time status for all 9 public testnet endpoints.
+
 ## Quick start
 
 ```bash
